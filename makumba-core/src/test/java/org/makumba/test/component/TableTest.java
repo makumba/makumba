@@ -584,6 +584,7 @@ public class TableTest extends TestCase {
     public void testPtrOneReInsert() {
         Dictionary<String, Object> p = new Hashtable<String, Object>();
         p.put("extraData.something", "else2");
+	System.out.println("*******3 ptr "+ptr); 
         db.update(ptr, p);
         Dictionary<String, Object> d = db.read(ptr, personFields);
         ptrOne = (Pointer) d.get("extraData");
@@ -640,6 +641,7 @@ public class TableTest extends TestCase {
         ArrayList<FieldValueDiff> expectedChanges = new ArrayList<FieldValueDiff>();
         Hashtable<String, Object> pmod = new Hashtable<String, Object>();
 
+	System.out.println("*******4 ptr "+ptr); 
         DataDefinition dd = DataDefinitionProvider.getInstance().getDataDefinition(ptr.getType());
 
         String fieldName = "indiv.name";
