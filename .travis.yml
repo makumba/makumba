@@ -20,6 +20,7 @@ matrix:
           jdk: openjdk11
           env: MySqlVer=57
 
+script: mvn verify
 services: mysql
 before_script:
   - mysql -e "SET GLOBAL sql_mode='';"
