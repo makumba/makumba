@@ -9,7 +9,7 @@ matrix:
           env: MySqlVer=55
         - os: linux
           dist: trusty # mysql 5.6
-          jdk: oraclejdk11
+          jdk: oraclejdk8
           env: MySqlVer=56
         - os: linux
           dist: xenial # mysql 5.7
