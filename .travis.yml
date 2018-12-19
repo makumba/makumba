@@ -26,12 +26,13 @@ before_script:
   # - sudo service mysql restart
   # faster alternative, not requiring service restart:
   # - mysql -e "SET GLOBAL sql_mode='MYSQL40';"
-  - if [ "$MySqlVer" -ge "57" ]; then mysql -e "SET GLOBAL SQL_MODE = 'NO_ZERO_IN_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';"; mysql -e "SET GLOBAL explicit_defaults_for_timestamp=OFF;"; fi
+  - mysql --version
+  - if [ "$MySqlVer" -ge "57" ]; then echo "SET GLOBAL... for MySql $MySqlVer"; mysql -e "SET GLOBAL SQL_MODE = 'NO_ZERO_IN_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';"; mysql -e "SET GLOBAL explicit_defaults_for_timestamp=OFF;"; fi
   - mysql -e "DROP DATABASE IF EXISTS makumba;" # TEMP to make sure it is empty
   - mysql -e "CREATE DATABASE IF NOT EXISTS makumba;"
 
   # TEMP - populate DB to avoid "Table definition has changed, please retry transaction" during tests
-  - if [ "$MySqlVer" -ge "56" ]; then mysql makumba < ci/makumba-test.sql; fi
+  - if [ "$MySqlVer" -ge "56" ]; then echo "DB restore for MySql $MySqlVer"; mysql makumba < ci/makumba-test.sql; fi
   - mysql -e 'CREATE DATABASE IF NOT EXISTS makhib;'
   - 'cd makumba-parent'
 
