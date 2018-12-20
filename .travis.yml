@@ -3,6 +3,7 @@ dist: precise
 services: mysql
 before_install:
   - export TZ=Europe/Berlin
+  - mysql -e "SET GLOBAL time_zone = '+1:00';"
   - mysql -e 'CREATE DATABASE IF NOT EXISTS makumba;'
   - 'cd makumba-parent'
 jdk: 
