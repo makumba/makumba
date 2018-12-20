@@ -174,6 +174,7 @@
                 </execution>
               </executions>
               <configuration>
+		<argLine>-Duser.timezone=CEST</argLine>
                 <wait>false</wait>
                 <container>
                   <containerId>tomcat7x</containerId>
@@ -199,6 +200,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
+    <argLine>-Duser.timezone=CEST</argLine>
                     <!-- normally surefire runs in the test phase, we don't want that. It is configured below to run in the 
 			 integration-test phase -->
                     <skip>true</skip>

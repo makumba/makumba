@@ -2,7 +2,6 @@ language: java
 dist: precise
 services: mysql
 before_install:
-  - export TZ="Europe/Paris"
   - mysql -e 'CREATE DATABASE IF NOT EXISTS makumba;'
   - mysql -e 'CREATE DATABASE IF NOT EXISTS makhib;'
   - 'cd makumba-parent'
