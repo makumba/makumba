@@ -20,8 +20,7 @@ matrix:
           jdk: openjdk11
           env: MySqlVer=57
 
-#script:
-#  - mvn verify
+script: mvn verify
 
 services: mysql
 
