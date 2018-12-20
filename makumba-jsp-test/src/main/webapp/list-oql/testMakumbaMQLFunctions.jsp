@@ -18,8 +18,8 @@
 <br/>
 
 <% pageContext.setAttribute("someDate", new java.util.GregorianCalendar(2010, 3, 19).getTime()); %>
-someDate: ${someDate}<br/>
 <mak:list from="test.Person p" limit="1" id="someDate">
+someDate: <mak:value expr="dateAdd($someDate, 0, 'day')"/><br/>
   +1 year: <mak:value expr="dateAdd($someDate, 1, 'year')"/> <br/>
   -1 year: <mak:value expr="dateAdd($someDate, -1, 'year')"/> <br/>
   +2 year: <mak:value expr="dateSub($someDate, 2, 'year')"/> <br/>
