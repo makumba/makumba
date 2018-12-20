@@ -134,8 +134,8 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public void endMakForm(WebResponse response) throws Exception {
-        compareToFileWithTestName(response, false);
 	System.err.println("**** ending mak:form");
+        compareToFileWithTestName(response, false);
     }
 
     public void testMakInputOptionCustomisation() throws ServletException, IOException, SAXException {
