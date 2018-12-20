@@ -2,11 +2,16 @@ language: java
 dist: precise
 services: mysql
 before_install:
+#  - export TZ=Europe/Berlin
+#  - mysql -e "SET GLOBAL time_zone = '+1:00';"
   - mysql -e 'CREATE DATABASE IF NOT EXISTS makumba;'
-  - mysql -e 'CREATE DATABASE IF NOT EXISTS makhib;'
   - 'cd makumba-parent'
 jdk: 
   - oraclejdk8
+
+script: mvn verify
+#  - mvn -Duser.timezone=Europe/Berlin verify
+
 notifications:
   slack:
     secure: ZNARLraxMVbMTgyybVPCAegM9YODhrgpQu4e+hn8mkuiAis2r77/tbHt31fIOAOnQzmbTw+4hl+BvHmsb4RzSmEgUxcp4VfAFh1Yp/iWH+Xljcfsq5rPJKqUIoQRmh5SHr3FiwFrQ4vqbymsnQx5pWeCIS6odWfQ8fDKJVq6orJ5bE+hLGmxXu83Oxr4jfnF54YJwDpDE3INoL/x7qzSagVkxh65K/NElzDfqDhh1PLJL2AWdgUz2nSZk+4wvkilwC2+ga0inzwwgDIzgBNYhqFwW8fqjjAQvl9wqHb/MqipLUHkMt9hJNhhkdPTGTLYKI4ho4itqqOgfJKy+6K1nF4DFqtHMhyzcSXQm2O/B2MolOt3B8nUuAhDElxG+JyAz/sLjltfK0ZHHzxOO8h20EIg9ddWPz2nZZF0sF6yqVE6fQsyjmOfgy9QWK0IqoatdXWanmqn0XX11AQeOjX8JmOhi9DCrhwkb55pDvBsAf5/wQsecR7aoF4B7guzClGgWolC49aWuLdrOQATH60NSEQfPIkKeN9h9u33ZAts/TJ6R37lUo5r6CIIJwrwxd5t98R25kfemnRHgO+CQOfeFgy9DrsX4SE2IK5WFNeTgtPmb4Q26sTXMoGylsmiEuCiYefI0CmfY+3VKkB9T1cULYrMqC9Ip2YBpq0UzxC8hGo=
