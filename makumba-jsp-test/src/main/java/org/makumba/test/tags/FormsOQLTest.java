@@ -129,11 +129,13 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public void testMakForm() throws ServletException, IOException, SAXException {
+	System.err.println("**** starting mak:form");
         includeJspWithTestName();
     }
 
     public void endMakForm(WebResponse response) throws Exception {
         compareToFileWithTestName(response, false);
+	System.err.println("**** ending mak:form");
     }
 
     public void testMakInputOptionCustomisation() throws ServletException, IOException, SAXException {
@@ -197,6 +199,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public void beginMakAddToNewForm(Request request) throws Exception {
+	System.err.println("**** begin addToNew");
         WebForm form = getFormInJspWithTestName(false);
         // set the inputs in the add-to-new form
         form.setParameter("indiv.name", MakumbaTestData.namePersonIndivName_AddToNew);
@@ -207,11 +210,13 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public void testMakAddToNewForm() throws ServletException, IOException {
+	System.err.println("**** start addToNew");
         includeJspWithTestName();
     }
 
     public void endMakAddToNewForm(WebResponse response) throws Exception {
         compareToFileWithTestName(response, false);
+	System.err.println("**** end addToNew");
     }
 
     public void beginMakAddToNewFormValidation(Request request) throws Exception {
