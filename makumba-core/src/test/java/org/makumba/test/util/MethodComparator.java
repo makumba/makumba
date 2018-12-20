@@ -13,7 +13,7 @@ import jdk.nashorn.internal.ir.annotations.Ignore;
 
 public class MethodComparator<T> implements Comparator<T> {
 
-    private static final char[] METHOD_SEPARATORS = { 1, 7 };
+    // private static final char[] METHOD_SEPARATORS = { 1, 7 };
 
     private MethodComparator() {
     }
@@ -41,7 +41,7 @@ public class MethodComparator<T> implements Comparator<T> {
     }
 
     private MethodPosition getIndexOfMethodPosition(final Method method) {
-        final Class aClass = method.getDeclaringClass();
+        final Class<?> aClass = method.getDeclaringClass();
         if (method.getAnnotation(Ignore.class) == null) {
             return getIndexOfMethodPosition(aClass, method.getName());
         } else {
@@ -51,32 +51,15 @@ public class MethodComparator<T> implements Comparator<T> {
         }
     }
 
-    private MethodPosition getIndexOfMethodPosition(final Class aClass, final String methodName) {
-        MethodPosition methodPosition;
-        for (final char methodSeparator : METHOD_SEPARATORS) {
-            methodPosition = getIndexOfMethodPosition(aClass, methodName, methodSeparator);
-            if (methodPosition instanceof NullMethodPosition) {
-                // logger.debug(
-                // "getIndexOfMethodPosition(): Trying to use another method separator for method: " + methodName);
-            } else {
-                return methodPosition;
-            }
-        }
-        return new NullMethodPosition();
-    }
-
-    private MethodPosition getIndexOfMethodPosition(final Class aClass, final String methodName,
-            final char methodSeparator) {
+    private MethodPosition getIndexOfMethodPosition(final Class<?> aClass, final String methodName) {
         final InputStream inputStream = aClass.getResourceAsStream(aClass.getSimpleName() + ".class");
         final LineNumberReader lineNumberReader = new LineNumberReader(new InputStreamReader(inputStream));
-        final String methodNameWithSeparator = methodName + methodSeparator;
         try {
             try {
                 String line;
                 while ((line = lineNumberReader.readLine()) != null) {
-                    if (line.contains(methodNameWithSeparator)) {
-                        return new MethodPosition(lineNumberReader.getLineNumber(),
-                                line.indexOf(methodNameWithSeparator));
+                    if (line.contains(methodName)) {
+                        return new MethodPosition(lineNumberReader.getLineNumber(), line.indexOf(methodName));
                     }
                 }
             } finally {
@@ -87,8 +70,8 @@ public class MethodComparator<T> implements Comparator<T> {
                     + aClass.getCanonicalName() + " " + e);
             return new NullMethodPosition();
         }
-        // logger.warn("getIndexOfMethodPosition(): Can't find method " + methodName + " in byte code of class "
-        // + aClass.getCanonicalName());
+        System.err.println("getIndexOfMethodPosition(): Can't find method " + methodName + " in byte code of class "
+                + aClass.getCanonicalName());
         return new NullMethodPosition();
     }
 
@@ -100,6 +83,11 @@ public class MethodComparator<T> implements Comparator<T> {
         public MethodPosition(int lineNumber, int indexInLine) {
             this.lineNumber = lineNumber;
             this.indexInLine = indexInLine;
+        }
+
+        @Override
+        public String toString() {
+            return lineNumber + ":" + indexInLine;
         }
 
         @Override
