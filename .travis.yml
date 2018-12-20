@@ -2,14 +2,14 @@ language: java
 dist: precise
 services: mysql
 before_install:
+  - export TZ=Europe/Berlin
   - mysql -e 'CREATE DATABASE IF NOT EXISTS makumba;'
-  - mysql -e 'CREATE DATABASE IF NOT EXISTS makhib;'
   - 'cd makumba-parent'
 jdk: 
   - oraclejdk8
 
 script: 
-  - mvn verify
+  - mvn -Duser.timezone=Europe/Berlin verify
 
 notifications:
   slack:
