@@ -35,9 +35,6 @@ import java.util.Vector;
 
 import javax.servlet.ServletException;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
-
 import org.apache.cactus.Request;
 import org.apache.commons.collections.CollectionUtils;
 import org.makumba.Transaction;
@@ -47,12 +44,15 @@ import org.makumba.test.util.MakumbaJspTestCase;
 import org.makumba.test.util.MakumbaTestData;
 import org.makumba.test.util.MakumbaTestSetup;
 import org.makumba.test.util.MakumbaWebTestSetup;
+import org.makumba.test.util.OrderedTestSuite;
 import org.xml.sax.SAXException;
 
 import com.meterware.httpunit.HTMLElement;
 import com.meterware.httpunit.WebConversation;
 import com.meterware.httpunit.WebForm;
 import com.meterware.httpunit.WebResponse;
+
+import junit.framework.Test;
 
 /**
  * @author Johannes Peeters
@@ -80,7 +80,7 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public static Test suite() {
-        setup = new Suite(new TestSuite(FormsOQLTest.class));
+        setup = new Suite(new OrderedTestSuite(FormsOQLTest.class));
         return setup;
     }
 
@@ -129,12 +129,10 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public void testMakForm() throws ServletException, IOException, SAXException {
-	System.err.println("**** starting mak:form");
         includeJspWithTestName();
     }
 
     public void endMakForm(WebResponse response) throws Exception {
-	System.err.println("**** ending mak:form");
         compareToFileWithTestName(response, false);
     }
 
@@ -199,7 +197,6 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public void beginMakAddToNewForm(Request request) throws Exception {
-	System.err.println("**** begin addToNew");
         WebForm form = getFormInJspWithTestName(false);
         // set the inputs in the add-to-new form
         form.setParameter("indiv.name", MakumbaTestData.namePersonIndivName_AddToNew);
@@ -210,13 +207,11 @@ public class FormsOQLTest extends MakumbaJspTestCase {
     }
 
     public void testMakAddToNewForm() throws ServletException, IOException {
-	System.err.println("**** start addToNew");
         includeJspWithTestName();
     }
 
     public void endMakAddToNewForm(WebResponse response) throws Exception {
         compareToFileWithTestName(response, false);
-	System.err.println("**** end addToNew");
     }
 
     public void beginMakAddToNewFormValidation(Request request) throws Exception {
