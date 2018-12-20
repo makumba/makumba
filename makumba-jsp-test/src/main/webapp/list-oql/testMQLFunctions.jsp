@@ -18,8 +18,6 @@
 <b>MQL Functions</b>
 <br><br><br>
 
-birthdateJohn: ${someBirthdate }<br/><br/>
-testDate: ${day }<br/><br/>
 
 <i>list from="test.Person p" where="p.birthdate=$someBirthdate"</i><br/>
 <mak:list from="test.Person p" where="p.birthdate=$someBirthdate">

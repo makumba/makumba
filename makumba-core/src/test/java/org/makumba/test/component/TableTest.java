@@ -34,10 +34,6 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-
 import org.makumba.DataDefinition;
 import org.makumba.FieldDefinition;
 import org.makumba.FieldValueDiff;
@@ -50,6 +46,10 @@ import org.makumba.commons.CollectionUtils;
 import org.makumba.providers.DataDefinitionProvider;
 import org.makumba.providers.TransactionProvider;
 import org.makumba.test.util.MakumbaTestData;
+import org.makumba.test.util.OrderedTestSuite;
+
+import junit.framework.Test;
+import junit.framework.TestCase;
 
 /**
  * Testing table operations, using new MDD parser
@@ -70,7 +70,7 @@ public class TableTest extends TestCase {
     }
 
     public static Test suite() {
-        return new TestSuite(TableTest.class);
+        return new OrderedTestSuite(TableTest.class);
     }
 
     @Override
@@ -134,7 +134,8 @@ public class TableTest extends TestCase {
             try {
                 db.executeQuery("SELECT t FROM test.validMdds." + v.elementAt(i) + " t", null);
 
-                List<FieldDefinition> fields = ddp.getDataDefinition("test.validMdds." + v.elementAt(i)).getFieldDefinitions();
+                List<FieldDefinition> fields = ddp.getDataDefinition(
+                    "test.validMdds." + v.elementAt(i)).getFieldDefinitions();
                 String what = "";
                 for (FieldDefinition fd : fields) {
                     String ftype = ddp.getDataDefinition("test.validMdds." + v.elementAt(i)).getFieldDefinition(
@@ -151,8 +152,8 @@ public class TableTest extends TestCase {
                     db.executeQuery("SELECT " + what + " FROM test.validMdds." + v.elementAt(i) + " t", null);
                 }
             } catch (Exception e) {
-                errors.add("\n ." + (errors.size() + 1) + ") Error querying valid MDD <" + v.elementAt(i) + ">:\n\t "
-                        + e);
+                errors.add(
+                    "\n ." + (errors.size() + 1) + ") Error querying valid MDD <" + v.elementAt(i) + ">:\n\t " + e);
             }
         }
         if (errors.size() > 0) {
@@ -480,8 +481,8 @@ public class TableTest extends TestCase {
         assertEquals("else2", d.get("something"));
     }
 
-    static String[][] languageData = { { "English", "en" }, { "French", "fr" }, { "German", "de" },
-            { "Italian", "it" }, { "Spanish", "sp" } };
+    static String[][] languageData = { { "English", "en" }, { "French", "fr" }, { "German", "de" }, { "Italian", "it" },
+            { "Spanish", "sp" } };
 
     static String[] toInsert = { "German", "Italian" };
 
@@ -650,8 +651,8 @@ public class TableTest extends TestCase {
         String fieldSurname = "indiv.surname";
         String newSurname = "D'oh";
         pmod.put(fieldSurname, newSurname);
-        expectedChanges.add(new FieldValueDiff(fieldSurname, dd.getFieldOrPointedFieldDefinition(fieldSurname), "doe",
-                newSurname));
+        expectedChanges.add(
+            new FieldValueDiff(fieldSurname, dd.getFieldOrPointedFieldDefinition(fieldSurname), "doe", newSurname));
 
         pmod.put("weight", new Double(85.7d));
 

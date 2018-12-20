@@ -3,15 +3,14 @@ package org.makumba.test.component;
 import java.util.Arrays;
 import java.util.Vector;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-
 import org.makumba.Pointer;
 import org.makumba.Transaction;
 import org.makumba.providers.TransactionProvider;
 import org.makumba.test.util.MakumbaTestSetup;
+import org.makumba.test.util.OrderedTestSuite;
 
+import junit.framework.Test;
+import junit.framework.TestCase;
 
 /**
  * Tests methods that manipulate sets in the {@link Transaction} interface, specifically
@@ -32,7 +31,7 @@ public class ExternalSetAPITest extends TestCase {
     private static MakumbaTestSetup setup;
 
     public static Test suite() {
-        return setup = new MakumbaTestSetup(new TestSuite(ExternalSetAPITest.class), "oql");
+        return setup = new MakumbaTestSetup(new OrderedTestSuite(ExternalSetAPITest.class), "oql");
     }
 
     @Override
