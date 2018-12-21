@@ -1,16 +1,38 @@
 language: java
-dist: precise
-services: mysql
-before_install:
-#  - export TZ=Europe/Berlin
-#  - mysql -e "SET GLOBAL time_zone = '+1:00';"
-  - mysql -e 'CREATE DATABASE IF NOT EXISTS makumba;'
-  - 'cd makumba-parent'
-jdk: 
-  - oraclejdk8
+# https://docs.travis-ci.com/user/database-setup/#mysql
+# https://docs.travis-ci.com/user/customizing-the-build/#build-matrix
+matrix:
+    include:
+        - os: linux
+          dist: precise # mysql 5.5
+          jdk: oraclejdk8
+          env: MySqlVer=55
+        - os: linux
+          dist: trusty # mysql 5.6
+          jdk: oraclejdk11
+          env: MySqlVer=56
+        - os: linux
+          dist: xenial # mysql 5.7
+          jdk: oraclejdk11
+          env: MySqlVer=57
+        - os: linux
+          dist: xenial # mysql 5.7
+          jdk: openjdk11
+          env: MySqlVer=57
 
 script: mvn verify
-#  - mvn -Duser.timezone=Europe/Berlin verify
+
+services: mysql
+
+before_script:
+  - mysql -e "SET GLOBAL sql_mode='';"
+  - mysql --version
+  - mysql -e "DROP DATABASE IF EXISTS makumba;" # TEMP to make sure it is empty
+  - mysql -e "CREATE DATABASE IF NOT EXISTS makumba;"
+
+  # TEMP - populate DB to avoid "Table definition has changed, please retry transaction" during tests
+  - if [ "$MySqlVer" -ge "56" ]; then echo "DB restore for MySql $MySqlVer"; mysql makumba < ci/makumba-test.sql; fi
+  - 'cd makumba-parent'
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)

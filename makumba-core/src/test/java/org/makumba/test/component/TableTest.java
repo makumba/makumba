@@ -405,6 +405,7 @@ public class TableTest extends TestCase {
         p.put("description", "home");
         p.put("sth.aaa", "bbb");
 
+	assertNotNull(ptr);
         set1 = db.insert(ptr, "address", p);
 
         assertNotNull(set1);
@@ -581,6 +582,7 @@ public class TableTest extends TestCase {
     public void testPtrOneReInsert() {
         Dictionary<String, Object> p = new Hashtable<String, Object>();
         p.put("extraData.something", "else2");
+	assertNotNull(ptr); 
         db.update(ptr, p);
         Dictionary<String, Object> d = db.read(ptr, personFields);
         ptrOne = (Pointer) d.get("extraData");
@@ -637,6 +639,7 @@ public class TableTest extends TestCase {
         ArrayList<FieldValueDiff> expectedChanges = new ArrayList<FieldValueDiff>();
         Hashtable<String, Object> pmod = new Hashtable<String, Object>();
 
+	assertNotNull(ptr); 
         DataDefinition dd = DataDefinitionProvider.getInstance().getDataDefinition(ptr.getType());
 
         String fieldName = "indiv.name";
